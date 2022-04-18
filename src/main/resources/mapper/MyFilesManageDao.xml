@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.secret.dao.MyFilesManageDao">
+
+    <resultMap type="com.secret.entity.MyFilesManage" id="MyFilesManageMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="sourceId" column="source_id" jdbcType="INTEGER"/>
+        <result property="sourceType" column="source_type" jdbcType="VARCHAR"/>
+        <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+        <result property="fileUrl" column="file_url" jdbcType="VARCHAR"/>
+        <result property="createdBy" column="created_by" jdbcType="INTEGER"/>
+        <result property="createdDate" column="created_date" jdbcType="TIMESTAMP"/>
+        <result property="lastUpdatedBy" column="last_updated_by" jdbcType="INTEGER"/>
+        <result property="lastUpdatedDate" column="last_updated_date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MyFilesManageMap">
+        select
+          id, source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date
+        from my_files_manage
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MyFilesManageMap">
+        select
+          id, source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date
+        from my_files_manage
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
+            <if test="sourceType != null and sourceType != ''">
+                and source_type = #{sourceType}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+            <if test="fileUrl != null and fileUrl != ''">
+                and file_url = #{fileUrl}
+            </if>
+            <if test="createdBy != null">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="lastUpdatedBy != null">
+                and last_updated_by = #{lastUpdatedBy}
+            </if>
+            <if test="lastUpdatedDate != null">
+                and last_updated_date = #{lastUpdatedDate}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from my_files_manage
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
+            <if test="sourceType != null and sourceType != ''">
+                and source_type = #{sourceType}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+            <if test="fileUrl != null and fileUrl != ''">
+                and file_url = #{fileUrl}
+            </if>
+            <if test="createdBy != null">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="lastUpdatedBy != null">
+                and last_updated_by = #{lastUpdatedBy}
+            </if>
+            <if test="lastUpdatedDate != null">
+                and last_updated_date = #{lastUpdatedDate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
+        values (#{sourceId}, #{sourceType}, #{fileName}, #{fileUrl}, #{createdBy}, #{createdDate}, #{lastUpdatedBy}, #{lastUpdatedDate})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+        </foreach>
+        on duplicate key update
+        source_id = values(source_id),
+        source_type = values(source_type),
+        file_name = values(file_name),
+        file_url = values(file_url),
+        created_by = values(created_by),
+        created_date = values(created_date),
+        last_updated_by = values(last_updated_by),
+        last_updated_date = values(last_updated_date)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update my_files_manage
+        <set>
+            <if test="sourceId != null">
+                source_id = #{sourceId},
+            </if>
+            <if test="sourceType != null and sourceType != ''">
+                source_type = #{sourceType},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                file_name = #{fileName},
+            </if>
+            <if test="fileUrl != null and fileUrl != ''">
+                file_url = #{fileUrl},
+            </if>
+            <if test="createdBy != null">
+                created_by = #{createdBy},
+            </if>
+            <if test="createdDate != null">
+                created_date = #{createdDate},
+            </if>
+            <if test="lastUpdatedBy != null">
+                last_updated_by = #{lastUpdatedBy},
+            </if>
+            <if test="lastUpdatedDate != null">
+                last_updated_date = #{lastUpdatedDate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from my_files_manage where id = #{id}
+    </delete>
+
+</mapper>
+
