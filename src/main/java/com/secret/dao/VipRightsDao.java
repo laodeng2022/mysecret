@@ -3,6 +3,7 @@ package com.secret.dao;
 import com.secret.entity.VipRights;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface VipRightsDao {
      * 查询指定行数据
      *
      * @param vipRights 查询条件
-     * @param pageable         分页对象
+     * @param pageable  分页对象
      * @return 对象列表
      */
     List<VipRights> queryAllByLimit(VipRights vipRights, @Param("pageable") Pageable pageable);

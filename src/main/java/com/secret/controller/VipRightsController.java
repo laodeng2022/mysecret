@@ -27,8 +27,8 @@ public class VipRightsController {
     /**
      * 分页查询
      *
-     * @param vipRights 筛选条件
-     * @param pageRequest      分页对象
+     * @param vipRights   筛选条件
+     * @param pageRequest 分页对象
      * @return 查询结果
      */
     @GetMapping

@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (MyBaseInfo)表服务实现类
@@ -35,8 +36,8 @@ public class MyBaseInfoServiceImpl implements MyBaseInfoService {
     /**
      * 分页查询
      *
-     * @param myBaseInfo 筛选条件
-     * @param pageRequest      分页对象
+     * @param myBaseInfo  筛选条件
+     * @param pageRequest 分页对象
      * @return 查询结果
      */
     @Override
@@ -78,5 +79,10 @@ public class MyBaseInfoServiceImpl implements MyBaseInfoService {
     @Override
     public boolean deleteById(Long id) {
         return this.myBaseInfoDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<MyBaseInfo> queryList(MyBaseInfo mybaseInfo) {
+        return this.myBaseInfoDao.queryList(mybaseInfo);
     }
 }

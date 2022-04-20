@@ -16,6 +16,7 @@ public class JwtConfig {
     private String secret;
     private long expire;
     private String header;
+
     /*
      * 根据身份ID标识，生成Token
      */

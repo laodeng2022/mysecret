@@ -20,11 +20,12 @@ public class WebConfig implements WebMvcConfigurer {
      * 拦截器注册
      */
     @Resource
-    private TokenInterceptor tokenInterceptor ;
+    private TokenInterceptor tokenInterceptor;
 
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor).addPathPatterns("/**");
     }
+
     @Override
     public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
 

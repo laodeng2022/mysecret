@@ -20,7 +20,6 @@ public interface MyDiaryService {
     MyDiary queryById(Long id);
 
 
-
     /**
      * 新增数据
      *

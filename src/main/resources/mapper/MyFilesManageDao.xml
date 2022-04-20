@@ -25,7 +25,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MyFilesManageMap">
         select
-          id, source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date
+        id, source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date
         from my_files_manage
         <where>
             <if test="id != null">
@@ -97,22 +97,26 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
-        values (#{sourceId}, #{sourceType}, #{fileName}, #{fileUrl}, #{createdBy}, #{createdDate}, #{lastUpdatedBy}, #{lastUpdatedDate})
+        values (#{sourceId}, #{sourceType}, #{fileName}, #{fileUrl}, #{createdBy},SYSDATE(), #{lastUpdatedBy}, #{lastUpdatedDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
+        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date,
+        last_updated_by, last_updated_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+            (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy},
+            #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date)
+        insert into my_files_manage(source_id, source_type, file_name, file_url, created_by, created_date,
+        last_updated_by, last_updated_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+            (#{entity.sourceId}, #{entity.sourceType}, #{entity.fileName}, #{entity.fileUrl}, #{entity.createdBy},
+            #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
         </foreach>
         on duplicate key update
         source_id = values(source_id),

@@ -3,6 +3,7 @@ package com.secret.dao;
 import com.secret.entity.MyFilesManage;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface MyFilesManageDao {
      * 查询指定行数据
      *
      * @param myFilesManage 查询条件
-     * @param pageable         分页对象
+     * @param pageable      分页对象
      * @return 对象列表
      */
     List<MyFilesManage> queryAllByLimit(MyFilesManage myFilesManage, @Param("pageable") Pageable pageable);

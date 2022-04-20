@@ -3,6 +3,7 @@ package com.secret.dao;
 import com.secret.entity.MyBaseInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface MyBaseInfoDao {
      * 查询指定行数据
      *
      * @param myBaseInfo 查询条件
-     * @param pageable         分页对象
+     * @param pageable   分页对象
      * @return 对象列表
      */
     List<MyBaseInfo> queryAllByLimit(MyBaseInfo myBaseInfo, @Param("pageable") Pageable pageable);
@@ -79,5 +80,12 @@ public interface MyBaseInfoDao {
      */
     int deleteById(Long id);
 
+    /**
+     * 通过条件查询列表
+     *
+     * @param mybaseInfo
+     * @return
+     */
+    List<MyBaseInfo> queryList(MyBaseInfo mybaseInfo);
 }
 

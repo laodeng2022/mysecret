@@ -14,19 +14,19 @@ import java.io.Serializable;
 @Data
 public class MySetting implements Serializable {
     private static final long serialVersionUID = -78282064900101737L;
-    
+
     private Long id;
-    
+
     private Long userId;
-    
+
     private String autoSnap;
-    
+
     private Long createdBy;
-    
+
     private Date createdDate;
-    
+
     private Long lastUpdatedBy;
-    
+
     private Date lastUpdatedDate;
 }
 

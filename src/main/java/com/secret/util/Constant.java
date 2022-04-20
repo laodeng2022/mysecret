@@ -1,6 +1,5 @@
 package com.secret.util;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,7 @@ public class Constant {
      * @author laodeng
      * @Email befamouscoder@163.com
      */
-    public enum MenuType {
+    public enum SourceType {
         /**
          * 目录
          */
@@ -36,7 +35,7 @@ public class Constant {
 
         private int value;
 
-        private MenuType(int value) {
+        private SourceType(int value) {
             this.value = value;
         }
 
@@ -44,7 +43,6 @@ public class Constant {
             return value;
         }
     }
-
 
 
 }

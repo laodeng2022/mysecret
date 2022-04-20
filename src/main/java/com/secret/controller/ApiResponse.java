@@ -18,6 +18,7 @@ public final class ApiResponse<T> {
         this.data = data;
         this.code = code;
     }
+
     @JsonCreator
     public static <T> ApiResponse<T> success(
             @JsonProperty("data") T data) {
@@ -29,10 +30,6 @@ public final class ApiResponse<T> {
             @JsonProperty("message") String message,
             @JsonProperty("data") T data) {
         return new ApiResponse<>(Code.ERROR.getCode(), message, data);
-    }
-    @JsonCreator
-    public static ApiResponse<Object> success() {
-        return new ApiResponse<>(Code.SUCCESS.getCode(), "", null);
     }
 
     public enum Code {

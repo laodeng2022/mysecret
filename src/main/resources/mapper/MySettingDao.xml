@@ -23,7 +23,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MySettingMap">
         select
-          id, user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date
+        id, user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date
         from my_setting
         <where>
             <if test="id != null">
@@ -79,18 +79,47 @@
             </if>
         </where>
     </select>
+    <select id="queryList" resultMap="MySettingMap">
+        select
+        id, user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date
+        from my_setting
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="autoSnap != null and autoSnap != ''">
+                and auto_snap = #{autoSnap}
+            </if>
+            <if test="createdBy != null">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="lastUpdatedBy != null">
+                and last_updated_by = #{lastUpdatedBy}
+            </if>
+            <if test="lastUpdatedDate != null">
+                and last_updated_date = #{lastUpdatedDate}
+            </if>
+        </where>
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into my_setting(user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date)
-        values (#{userId}, #{autoSnap}, #{createdBy}, #{createdDate}, #{lastUpdatedBy}, #{lastUpdatedDate})
+        values (#{userId}, #{autoSnap}, #{createdBy},SYSDATE(), #{lastUpdatedBy}, #{lastUpdatedDate})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
         insert into my_setting(user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.userId}, #{entity.autoSnap}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+            (#{entity.userId}, #{entity.autoSnap}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy},
+            #{entity.lastUpdatedDate})
         </foreach>
     </insert>
 
@@ -98,7 +127,8 @@
         insert into my_setting(user_id, auto_snap, created_by, created_date, last_updated_by, last_updated_date)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.userId}, #{entity.autoSnap}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate})
+            (#{entity.userId}, #{entity.autoSnap}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy},
+            #{entity.lastUpdatedDate})
         </foreach>
         on duplicate key update
         user_id = values(user_id),

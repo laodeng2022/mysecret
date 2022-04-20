@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class TokenInterceptor extends HandlerInterceptorAdapter {
     @Resource
-    private JwtConfig jwtConfig ;
+    private JwtConfig jwtConfig;
+
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,

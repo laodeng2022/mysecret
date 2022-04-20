@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Data
 public class VipRights implements Serializable {
     private static final long serialVersionUID = 233522077352541249L;
-    
+
     private Long id;
-    
+
     private String title;
-    
+
     private String url;
-    
+
     private String vipLevel;
 
 }

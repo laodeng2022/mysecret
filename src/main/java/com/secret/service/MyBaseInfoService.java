@@ -4,6 +4,8 @@ import com.secret.entity.MyBaseInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 /**
  * (MyBaseInfo)表服务接口
  *
@@ -23,8 +25,8 @@ public interface MyBaseInfoService {
     /**
      * 分页查询
      *
-     * @param myBaseInfo 筛选条件
-     * @param pageRequest      分页对象
+     * @param myBaseInfo  筛选条件
+     * @param pageRequest 分页对象
      * @return 查询结果
      */
     Page<MyBaseInfo> queryByPage(MyBaseInfo myBaseInfo, PageRequest pageRequest);
@@ -53,4 +55,11 @@ public interface MyBaseInfoService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 获取用户列表
+     *
+     * @param mybaseInfo
+     * @return
+     */
+    List<MyBaseInfo> queryList(MyBaseInfo mybaseInfo);
 }

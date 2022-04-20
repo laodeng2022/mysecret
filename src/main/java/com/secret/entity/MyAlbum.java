@@ -14,17 +14,17 @@ import java.util.Date;
 @Data
 public class MyAlbum implements Serializable {
     private static final long serialVersionUID = -74172808992046054L;
-    
+
     private Long id;
-    
+
     private String title;
-    
+
     private Long createdBy;
-    
+
     private Date createdDate;
-    
+
     private Long lastUpdatedBy;
-    
+
     private Date lastUpdatedDate;
 }
 

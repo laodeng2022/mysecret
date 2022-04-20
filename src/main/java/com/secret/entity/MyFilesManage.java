@@ -14,23 +14,23 @@ import java.io.Serializable;
 @Data
 public class MyFilesManage implements Serializable {
     private static final long serialVersionUID = 893909008373913912L;
-    
+
     private Long id;
-    
+
     private Long sourceId;
-    
+
     private String sourceType;
-    
+
     private String fileName;
-    
+
     private String fileUrl;
-    
+
     private Long createdBy;
-    
+
     private Date createdDate;
-    
+
     private Long lastUpdatedBy;
-    
+
     private Date lastUpdatedDate;
 
 }

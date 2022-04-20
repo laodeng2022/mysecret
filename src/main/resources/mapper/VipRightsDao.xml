@@ -20,7 +20,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="VipRightsMap">
         select
-          id, title, url, vip_level
+        id, title, url, vip_level
         from vip_rights
         <where>
             <if test="id != null">
@@ -58,7 +58,7 @@
             </if>
         </where>
     </select>
-    <select id="queryList"  resultMap="VipRightsMap">
+    <select id="queryList" resultMap="VipRightsMap">
         select
         id, title, url, vip_level
         from vip_rights
@@ -88,7 +88,7 @@
         insert into vip_rights(title, url, vip_level)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.title}, #{entity.url}, #{entity.vipLevel})
+            (#{entity.title}, #{entity.url}, #{entity.vipLevel})
         </foreach>
     </insert>
 

@@ -6,6 +6,8 @@
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="account" column="account" jdbcType="VARCHAR"/>
         <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="lockPassword" column="lock_password" jdbcType="VARCHAR"/>
+        <result property="maskPassword" column="mask_password" jdbcType="VARCHAR"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
         <result property="createdBy" column="created_by" jdbcType="INTEGER"/>
@@ -18,7 +20,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="MyBaseInfoMap">
         select
-          id, account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level
+          id, account, password,lock_password,mask_password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level
         from my_base_info
         where id = #{id}
     </select>
@@ -26,7 +28,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="MyBaseInfoMap">
         select
-          id, account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level
+        id, account, password,lock_password,mask_password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level
         from my_base_info
         <where>
             <if test="id != null">
@@ -37,6 +39,12 @@
             </if>
             <if test="password != null and password != ''">
                 and password = #{password}
+            </if>
+            <if test="lockPassword != null and lockPassword != ''">
+                and lock_password = #{lockPassword}
+            </if>
+            <if test="maskPassword != null and maskPassword != ''">
+                and mask_password = #{maskPassword}
             </if>
             <if test="phone != null and phone != ''">
                 and phone = #{phone}
@@ -77,6 +85,55 @@
             <if test="password != null and password != ''">
                 and password = #{password}
             </if>
+            <if test="lockPassword != null and lockPassword != ''">
+                and lock_password = #{lockPassword}
+            </if>
+            <if test="maskPassword != null and maskPassword != ''">
+                and mask_password = #{maskPassword}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="createdBy != null">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="lastUpdatedBy != null">
+                and last_updated_by = #{lastUpdatedBy}
+            </if>
+            <if test="lastUpdatedDate != null">
+                and last_updated_date = #{lastUpdatedDate}
+            </if>
+            <if test="vipLevel != null and vipLevel != ''">
+                and vip_level = #{vipLevel}
+            </if>
+        </where>
+    </select>
+    <select id="queryList" resultMap="MyBaseInfoMap">
+        select
+        id, account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level
+        from my_base_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="lockPassword != null and lockPassword != ''">
+                and lock_password = #{lockPassword}
+            </if>
+            <if test="maskPassword != null and maskPassword != ''">
+                and mask_password = #{maskPassword}
+            </if>
             <if test="phone != null and phone != ''">
                 and phone = #{phone}
             </if>
@@ -103,27 +160,33 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into my_base_info(account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level)
-        values (#{account}, #{password}, #{phone}, #{email}, #{createdBy}, #{createdDate}, #{lastUpdatedBy}, #{lastUpdatedDate}, #{vipLevel})
+        insert into my_base_info(account, password, lock_password,mask_password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level)
+        values (#{account}, #{password}, #{lockPassword},#{maskPassword}, #{phone}, #{email}, SYSDATE(), SYSDATE(), #{lastUpdatedBy}, SYSDATE(), #{vipLevel})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into my_base_info(account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level)
+        insert into my_base_info(account, password, lock_password, mask_password,phone, email, created_by, created_date, last_updated_by,
+        last_updated_date, vip_level)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.account}, #{entity.password}, #{entity.phone}, #{entity.email}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
+            (#{entity.account}, #{entity.password},#{entity.lockPassword},#{entity.maskPassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
+            #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into my_base_info(account, password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level)
+        insert into my_base_info(account, password,lock_password,mask_password, phone, email, created_by, created_date, last_updated_by,
+        last_updated_date, vip_level)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.account}, #{entity.password}, #{entity.phone}, #{entity.email}, #{entity.createdBy}, #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
+            (#{entity.account}, #{entity.password},#{entity.lockPassword},#{entity.maskPassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
+            #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
         </foreach>
         on duplicate key update
         account = values(account),
         password = values(password),
+        lock_password = values(lockPassword),
+        mask_password = values(maskPassword),
         phone = values(phone),
         email = values(email),
         created_by = values(created_by),
@@ -142,6 +205,12 @@
             </if>
             <if test="password != null and password != ''">
                 password = #{password},
+            </if>
+            <if test="lockPassword != null and lockPassword != ''">
+                lock_password = #{lockPassword},
+            </if>
+            <if test="maskPassword != null and maskPassword != ''">
+                mask_password = #{maskPassword},
             </if>
             <if test="phone != null and phone != ''">
                 phone = #{phone},

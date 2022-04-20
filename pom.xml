@@ -5,7 +5,7 @@
     <groupId>com.secret</groupId>
     <artifactId>secret</artifactId>
     <version>1.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>secret</name>
     <url></url>
@@ -76,12 +76,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j</artifactId>
             <version>${spring-log4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-redis</artifactId>
-            <version>${springboot-redis.version}</version>
         </dependency>
 
         <!-- Testing Dependencies -->
@@ -182,6 +176,7 @@
                     <!-- maven打包的时候告诉maven不需要web.xml,否刚会报找不到web.xml错误 -->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
+
             </plugin>
 
             <plugin>
@@ -198,6 +193,18 @@
                     <skipTests>true</skipTests>
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <finalName>secret</finalName>

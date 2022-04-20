@@ -3,6 +3,7 @@ package com.secret.dao;
 import com.secret.entity.MySetting;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public interface MySettingDao {
      * 查询指定行数据
      *
      * @param mySetting 查询条件
-     * @param pageable         分页对象
+     * @param pageable  分页对象
      * @return 对象列表
      */
     List<MySetting> queryAllByLimit(MySetting mySetting, @Param("pageable") Pageable pageable);
@@ -79,5 +80,6 @@ public interface MySettingDao {
      */
     int deleteById(Long id);
 
+    List<MySetting> queryList(MySetting mySetting);
 }
 

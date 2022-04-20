@@ -27,8 +27,8 @@ public class MyBaseInfoController {
     /**
      * 分页查询
      *
-     * @param myBaseInfo 筛选条件
-     * @param pageRequest      分页对象
+     * @param myBaseInfo  筛选条件
+     * @param pageRequest 分页对象
      * @return 查询结果
      */
     @GetMapping

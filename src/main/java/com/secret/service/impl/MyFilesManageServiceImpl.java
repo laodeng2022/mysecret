@@ -36,7 +36,7 @@ public class MyFilesManageServiceImpl implements MyFilesManageService {
      * 分页查询
      *
      * @param myFilesManage 筛选条件
-     * @param pageRequest      分页对象
+     * @param pageRequest   分页对象
      * @return 查询结果
      */
     @Override

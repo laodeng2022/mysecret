@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (MySetting)表服务实现类
@@ -35,8 +36,8 @@ public class MySettingServiceImpl implements MySettingService {
     /**
      * 分页查询
      *
-     * @param mySetting 筛选条件
-     * @param pageRequest      分页对象
+     * @param mySetting   筛选条件
+     * @param pageRequest 分页对象
      * @return 查询结果
      */
     @Override
@@ -78,5 +79,10 @@ public class MySettingServiceImpl implements MySettingService {
     @Override
     public boolean deleteById(Long id) {
         return this.mySettingDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<MySetting> queryList(MySetting mySetting) {
+        return this.mySettingDao.queryList(mySetting);
     }
 }

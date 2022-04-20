@@ -1,14 +1,10 @@
 package com.secret.controller;
 
 import com.secret.config.JwtConfig;
-import com.secret.entity.MyAlbum;
-import com.secret.entity.MyBaseInfo;
-import com.secret.entity.MyDiary;
-import com.secret.entity.VipRights;
-import com.secret.service.MyAlbumService;
-import com.secret.service.MyBaseInfoService;
-import com.secret.service.MyDiaryService;
-import com.secret.service.VipRightsService;
+import com.secret.entity.*;
+import com.secret.service.*;
+import com.secret.util.Md5Util;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -48,6 +44,8 @@ public class MySecretController {
     private VipRightsService vipRightsService;
     @Resource
     private MyBaseInfoService myBaseInfoService;
+    @Resource
+    private MySettingService mySettingService;
 
     /**
      * 测试成成Token解析
@@ -73,7 +71,135 @@ public class MySecretController {
                 .getRequest();
         String token = request.getHeader("token");
         String subject = jwtConfig.getTokenClaim(token).getSubject();
-        return Long.valueOf(subject.split("##")[0]);
+        String userAccount = subject.split("##")[0];
+        MyBaseInfo mybaseInfo = new MyBaseInfo();
+        mybaseInfo.setAccount(userAccount);
+        List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(mybaseInfo);
+        return userInfoList.get(0).getId();
+    }
+
+    private MyBaseInfo getLoginUser() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        String token = request.getHeader("token");
+        String subject = jwtConfig.getTokenClaim(token).getSubject();
+        String userAccount = subject.split("##")[0];
+        MyBaseInfo mybaseInfo = new MyBaseInfo();
+        mybaseInfo.setAccount(userAccount);
+        mybaseInfo.setPassword(subject.split("##")[1]);
+        return mybaseInfo;
+    }
+
+    @PostMapping("/user/profile")
+    public ApiResponse<MyBaseInfo> addUserProfile(@RequestBody MyBaseInfo mybaseInfo) {
+
+        try {
+            MyBaseInfo loginUser = this.getLoginUser();
+            if (StringUtils.isEmpty(mybaseInfo.getAccount())) {
+                return ApiResponse.error("请设置用户账号", mybaseInfo);
+            }
+            if (StringUtils.isEmpty(loginUser.getPassword())) {
+                return ApiResponse.error("请设置用户密码", mybaseInfo);
+            }
+            MyBaseInfo checkBaseInfo = new MyBaseInfo();
+            checkBaseInfo.setAccount(loginUser.getAccount());
+            List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkBaseInfo);
+            if (!CollectionUtils.isEmpty(userInfoList)) {
+                return ApiResponse.error("用户已存在", mybaseInfo);
+            }
+            mybaseInfo.setVipLevel(null);
+            mybaseInfo.setPassword(Md5Util.encodeByMd5(loginUser.getPassword()));
+        } catch (Exception e) {
+            return ApiResponse.error("保存个人资料失败", mybaseInfo);
+        }
+        return ApiResponse.success(this.myBaseInfoService.insert(mybaseInfo));
+    }
+
+    @GetMapping("/user/profile")
+    public ApiResponse<MyBaseInfo> getUsrProfile() {
+        try {
+            MyBaseInfo loginUser = this.getLoginUser();
+            MyBaseInfo userProfileCond = new MyBaseInfo();
+            userProfileCond.setAccount(loginUser.getAccount());
+            List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(userProfileCond);
+            if (CollectionUtils.isEmpty(userInfoList)) {
+                return ApiResponse.error("用户不存在", null);
+            }
+            return ApiResponse.success(userInfoList.get(0));
+        } catch (Exception e) {
+            return ApiResponse.error("读取个人资料失败", null);
+        }
+    }
+
+    @PostMapping("/validLockPassowrd")
+    public ApiResponse<MyBaseInfo> validLockPassowrd(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo loginUser = this.getLoginUser();
+            MyBaseInfo checkUserProfile = new MyBaseInfo();
+            checkUserProfile.setAccount(loginUser.getAccount());
+            checkUserProfile.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkUserProfile);
+            if (CollectionUtils.isEmpty(userInfoList)) {
+                return ApiResponse.error("密码不正确", null);
+            }
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("验证启动密码失败", null);
+        }
+    }
+
+    @PostMapping("/updatePassword")
+    public ApiResponse<MyBaseInfo> updatePassword(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo curBaseInfo = this.myBaseInfoService.queryById(this.getCurrentUserId());
+            if (StringUtils.isEmpty(mybaseInfo.getNewpassword())) {
+                return ApiResponse.error("请设置新密码", null);
+            }
+            curBaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getNewpassword()));
+            curBaseInfo.setLastUpdatedDate(new Date());
+            this.myBaseInfoService.update(curBaseInfo);
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("更新密码失败", null);
+        }
+    }
+    @PostMapping("/setLockPassowrd")
+    public ApiResponse<MyBaseInfo> setLockPassowrd(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo curBaseInfo = this.myBaseInfoService.queryById(this.getCurrentUserId());
+            if (StringUtils.isEmpty(mybaseInfo.getPassword())) {
+                return ApiResponse.error("请设置密码", null);
+            }
+            if (StringUtils.isEmpty(mybaseInfo.getLockPassword())) {
+                return ApiResponse.error("请设置启动密码", null);
+            }
+            curBaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            curBaseInfo.setLockPassword(Md5Util.encodeByMd5(mybaseInfo.getLockPassword()));
+            curBaseInfo.setLastUpdatedDate(new Date());
+            this.myBaseInfoService.update(curBaseInfo);
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("更新密码失败", null);
+        }
+    }
+
+
+    @PostMapping("/user/setting")
+    public ApiResponse<MySetting> addUserSetting(@RequestBody MySetting mysetting) {
+        mysetting.setUserId(this.getCurrentUserId());
+        mysetting.setCreatedBy(mysetting.getUserId());
+        return ApiResponse.success(this.mySettingService.insert(mysetting));
+    }
+
+    @GetMapping("/user/setting")
+    public ApiResponse<MySetting> addUserSetting() {
+        MySetting mySetting = new MySetting();
+        mySetting.setUserId(this.getCurrentUserId());
+        List<MySetting> mySettingList = this.mySettingService.queryList(mySetting);
+        if (CollectionUtils.isEmpty(mySettingList)) {
+            return ApiResponse.error("找不到用户设置", null);
+        }
+        return ApiResponse.success(mySettingList.get(0));
     }
 
     /**
@@ -86,7 +212,6 @@ public class MySecretController {
     public ApiResponse<MyDiary> addDiary(@RequestBody MyDiary myDiary) {
         Long curUserId = this.getCurrentUserId();
         myDiary.setCreatedBy(curUserId);
-        myDiary.setCreatedDate(new Date());
         return ApiResponse.success(this.myDiaryService.insert(myDiary));
     }
 
