@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (MyFilesManage)表服务实现类
@@ -78,5 +79,20 @@ public class MyFilesManageServiceImpl implements MyFilesManageService {
     @Override
     public boolean deleteById(Long id) {
         return this.myFilesManageDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<MyFilesManage> queryList(MyFilesManage myFilesManage) {
+        return this.myFilesManageDao.queryList(myFilesManage);
+    }
+
+    @Override
+    public void deleteByCond(MyFilesManage deleteCond) {
+        this.myFilesManageDao.deleteByCond(deleteCond);
+    }
+
+    @Override
+    public void albumMove(MyFilesManage myFilesManage) {
+        this.myFilesManageDao.albumMove(myFilesManage);
     }
 }

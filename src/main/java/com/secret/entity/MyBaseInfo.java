@@ -41,7 +41,8 @@ public class MyBaseInfo implements Serializable {
 
     private String newpassword;
 
-    private String lockPassword;
-    private String maskPassword;
+    private String lockpassword;
+
+    private String maskpassword;
 }
 

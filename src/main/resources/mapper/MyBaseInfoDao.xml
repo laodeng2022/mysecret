@@ -6,8 +6,8 @@
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="account" column="account" jdbcType="VARCHAR"/>
         <result property="password" column="password" jdbcType="VARCHAR"/>
-        <result property="lockPassword" column="lock_password" jdbcType="VARCHAR"/>
-        <result property="maskPassword" column="mask_password" jdbcType="VARCHAR"/>
+        <result property="lockpassword" column="lock_password" jdbcType="VARCHAR"/>
+        <result property="maskpassword" column="mask_password" jdbcType="VARCHAR"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
         <result property="createdBy" column="created_by" jdbcType="INTEGER"/>
@@ -40,11 +40,11 @@
             <if test="password != null and password != ''">
                 and password = #{password}
             </if>
-            <if test="lockPassword != null and lockPassword != ''">
-                and lock_password = #{lockPassword}
+            <if test="lockpassword != null and lockpassword != ''">
+                and lock_password = #{lockpassword}
             </if>
-            <if test="maskPassword != null and maskPassword != ''">
-                and mask_password = #{maskPassword}
+            <if test="maskpassword != null and maskpassword != ''">
+                and mask_password = #{maskpassword}
             </if>
             <if test="phone != null and phone != ''">
                 and phone = #{phone}
@@ -85,11 +85,11 @@
             <if test="password != null and password != ''">
                 and password = #{password}
             </if>
-            <if test="lockPassword != null and lockPassword != ''">
-                and lock_password = #{lockPassword}
+            <if test="lockpassword != null and lockpassword != ''">
+                and lock_password = #{lockpassword}
             </if>
-            <if test="maskPassword != null and maskPassword != ''">
-                and mask_password = #{maskPassword}
+            <if test="maskpassword != null and maskpassword != ''">
+                and mask_password = #{maskpassword}
             </if>
             <if test="phone != null and phone != ''">
                 and phone = #{phone}
@@ -128,11 +128,11 @@
             <if test="password != null and password != ''">
                 and password = #{password}
             </if>
-            <if test="lockPassword != null and lockPassword != ''">
-                and lock_password = #{lockPassword}
+            <if test="lockpassword != null and lockpassword != ''">
+                and lock_password = #{lockpassword}
             </if>
-            <if test="maskPassword != null and maskPassword != ''">
-                and mask_password = #{maskPassword}
+            <if test="maskpassword != null and maskpassword != ''">
+                and mask_password = #{maskpassword}
             </if>
             <if test="phone != null and phone != ''">
                 and phone = #{phone}
@@ -161,7 +161,7 @@
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into my_base_info(account, password, lock_password,mask_password, phone, email, created_by, created_date, last_updated_by, last_updated_date, vip_level)
-        values (#{account}, #{password}, #{lockPassword},#{maskPassword}, #{phone}, #{email}, SYSDATE(), SYSDATE(), #{lastUpdatedBy}, SYSDATE(), #{vipLevel})
+        values (#{account}, #{password}, #{lockpassword},#{maskpassword}, #{phone}, #{email}, SYSDATE(), SYSDATE(), #{lastUpdatedBy}, SYSDATE(), #{vipLevel})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
@@ -169,7 +169,7 @@
         last_updated_date, vip_level)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.account}, #{entity.password},#{entity.lockPassword},#{entity.maskPassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
+            (#{entity.account}, #{entity.password},#{entity.lockpassword},#{entity.maskpassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
             #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
         </foreach>
     </insert>
@@ -179,14 +179,14 @@
         last_updated_date, vip_level)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.account}, #{entity.password},#{entity.lockPassword},#{entity.maskPassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
+            (#{entity.account}, #{entity.password},#{entity.lockpassword},#{entity.maskpassword}, #{entity.phone}, #{entity.email}, #{entity.createdBy},
             #{entity.createdDate}, #{entity.lastUpdatedBy}, #{entity.lastUpdatedDate}, #{entity.vipLevel})
         </foreach>
         on duplicate key update
         account = values(account),
         password = values(password),
-        lock_password = values(lockPassword),
-        mask_password = values(maskPassword),
+        lock_password = values(lockpassword),
+        mask_password = values(maskpassword),
         phone = values(phone),
         email = values(email),
         created_by = values(created_by),
@@ -206,11 +206,11 @@
             <if test="password != null and password != ''">
                 password = #{password},
             </if>
-            <if test="lockPassword != null and lockPassword != ''">
-                lock_password = #{lockPassword},
+            <if test="lockpassword != null and lockpassword != ''">
+                lock_password = #{lockpassword},
             </if>
-            <if test="maskPassword != null and maskPassword != ''">
-                mask_password = #{maskPassword},
+            <if test="maskpassword != null and maskpassword != ''">
+                mask_password = #{maskpassword},
             </if>
             <if test="phone != null and phone != ''">
                 phone = #{phone},

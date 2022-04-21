@@ -2,6 +2,7 @@ package com.secret.service;
 
 
 import com.secret.entity.MyAlbum;
+import com.secret.entity.MyFilesManage;
 
 /**
  * (MyAlbum)表服务接口
@@ -42,5 +43,4 @@ public interface MyAlbumService {
      * @return 是否成功
      */
     boolean deleteById(Long id);
-
 }

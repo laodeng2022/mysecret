@@ -46,6 +46,11 @@ public class MySecretController {
     private MyBaseInfoService myBaseInfoService;
     @Resource
     private MySettingService mySettingService;
+    /**
+     * 服务对象
+     */
+    @Resource
+    private MyFilesManageService myFilesManageService;
 
     /**
      * 测试成成Token解析
@@ -160,9 +165,43 @@ public class MySecretController {
             this.myBaseInfoService.update(curBaseInfo);
             return ApiResponse.success(mybaseInfo);
         } catch (Exception e) {
-            return ApiResponse.error("更新密码失败", null);
+            return ApiResponse.error("设置启动密码失败", null);
         }
     }
+
+    @PostMapping("/setMaskPassowrd")
+    public ApiResponse<MyBaseInfo> setMaskPassowrd(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo curBaseInfo = this.myBaseInfoService.queryById(this.getCurrentUserId());
+            if (StringUtils.isEmpty(mybaseInfo.getMaskpassword())) {
+                return ApiResponse.error("请设置伪装密码", null);
+            }
+            curBaseInfo.setMaskpassword(Md5Util.encodeByMd5(mybaseInfo.getMaskpassword()));
+            curBaseInfo.setLastUpdatedDate(new Date());
+            this.myBaseInfoService.update(curBaseInfo);
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("设置伪装密码失败", null);
+        }
+    }
+
+    @PostMapping("/validMaskPassowrd")
+    public ApiResponse<MyBaseInfo> validMaskPassowrd(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo loginUser = this.getLoginUser();
+            MyBaseInfo checkMaskPassword = new MyBaseInfo();
+            checkMaskPassword.setAccount(loginUser.getAccount());
+            checkMaskPassword.setMaskpassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkMaskPassword);
+            if (CollectionUtils.isEmpty(userInfoList)) {
+                return ApiResponse.error("密码不正确", null);
+            }
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("设置伪装密码失败", null);
+        }
+    }
+
     @PostMapping("/setLockPassowrd")
     public ApiResponse<MyBaseInfo> setLockPassowrd(@RequestBody MyBaseInfo mybaseInfo) {
         try {
@@ -170,11 +209,11 @@ public class MySecretController {
             if (StringUtils.isEmpty(mybaseInfo.getPassword())) {
                 return ApiResponse.error("请设置密码", null);
             }
-            if (StringUtils.isEmpty(mybaseInfo.getLockPassword())) {
+            if (StringUtils.isEmpty(mybaseInfo.getLockpassword())) {
                 return ApiResponse.error("请设置启动密码", null);
             }
             curBaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
-            curBaseInfo.setLockPassword(Md5Util.encodeByMd5(mybaseInfo.getLockPassword()));
+            curBaseInfo.setLockpassword(Md5Util.encodeByMd5(mybaseInfo.getLockpassword()));
             curBaseInfo.setLastUpdatedDate(new Date());
             this.myBaseInfoService.update(curBaseInfo);
             return ApiResponse.success(mybaseInfo);
@@ -237,21 +276,6 @@ public class MySecretController {
         return ApiResponse.success(this.myDiaryService.queryById(id));
     }
 
-
-    /**
-     * 编辑数据
-     *
-     * @param myDiary 实体
-     * @return 编辑结果
-     */
-    @PutMapping
-    public ApiResponse<MyDiary> editDiary(MyDiary myDiary) {
-        myDiary.setLastUpdatedBy(this.getCurrentUserId());
-        myDiary.setLastUpdatedDate(new Date());
-        return ApiResponse.success(this.myDiaryService.update(myDiary));
-    }
-
-
     /**
      * 新增数据
      *
@@ -265,17 +289,6 @@ public class MySecretController {
     }
 
     /**
-     * 通过主键查询单条数据
-     *
-     * @param id 主键
-     * @return 单条数据
-     */
-    @GetMapping("/album/{id}")
-    public ApiResponse<MyAlbum> queryAlbumById(@PathVariable("id") Long id) {
-        return ApiResponse.success(this.myAlbumService.queryById(id));
-    }
-
-    /**
      * 删除数据
      *
      * @param id 主键
@@ -284,6 +297,17 @@ public class MySecretController {
     @DeleteMapping("/album/{id}")
     public ApiResponse<Boolean> deleteAlbumById(@PathVariable("id") Long id) {
         return ApiResponse.success(this.myAlbumService.deleteById(id));
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param id 主键
+     * @return 删除是否成功
+     */
+    @GetMapping("/album/{id}")
+    public ApiResponse<MyAlbum> getAlbumById(@PathVariable("id") Long id) {
+        return ApiResponse.success(this.myAlbumService.queryById(id));
     }
 
     /**
@@ -323,5 +347,53 @@ public class MySecretController {
         return ApiResponse.success(userBaseInfo);
     }
 
+    @PostMapping("/file")
+    public ApiResponse<MyFilesManage> uploadPic(@RequestBody MyFilesManage myFilesManage) {
+        Long userId = this.getCurrentUserId();
+        if (!CollectionUtils.isEmpty(myFilesManage.getUrl())) {
+            for (String url : myFilesManage.getUrl()) {
+                myFilesManage.setCreatedBy(userId);
+                myFilesManage.setSourceId(myFilesManage.getAlbum());
+                myFilesManage.setSourceType("album");
+                myFilesManage.setFileUrl(url);
+                this.myFilesManageService.insert(myFilesManage);
+            }
+
+        }
+        return ApiResponse.success(myFilesManage);
+    }
+
+    @PostMapping("/album/download/{album}")
+    public ApiResponse<Object> downloadFile(@PathVariable("album") Long album, @RequestBody MyFilesManage myFilesManage) {
+        myFilesManage.setSourceId(album);
+        return ApiResponse.success(this.myFilesManageService.queryList(myFilesManage));
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param id 主键
+     * @return 删除是否成功
+     */
+    @DeleteMapping("/album/{album}/file/{id}")
+    public ApiResponse<Boolean> deleteAlbumById(@PathVariable("album") Long album,@PathVariable("id") Long id) {
+        MyFilesManage deleteCond=new MyFilesManage();
+        deleteCond.setSourceId(album);
+        deleteCond.setId(id);
+        this.myFilesManageService.deleteByCond(deleteCond);
+        return ApiResponse.success(null);
+    }
+    /**
+     * 移动相册
+     *
+     * @return
+     */
+    @PostMapping("/album/move")
+    public ApiResponse<List<VipRights>> albumMove( @RequestBody MyFilesManage myFilesManage) {
+        myFilesManage.setLastUpdatedBy(this.getCurrentUserId());
+        myFilesManage.setLastUpdatedDate(new Date());
+        this.myFilesManageService.albumMove(myFilesManage);
+        return ApiResponse.success(null);
+    }
 }
 

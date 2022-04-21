@@ -93,6 +93,46 @@
             </if>
         </where>
     </select>
+    <select id="queryList"  resultMap="MyFilesManageMap">
+        select
+        id, source_id, source_type, file_name, file_url, created_by, created_date, last_updated_by, last_updated_date
+        from my_files_manage
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
+            <if test="sourceType != null and sourceType != ''">
+                and source_type = #{sourceType}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+            <if test="files != null and files.size>0">
+                and id in
+                <foreach collection="files" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="fileUrl != null and fileUrl != ''">
+                and file_url = #{fileUrl}
+            </if>
+            <if test="createdBy != null">
+                and created_by = #{createdBy}
+            </if>
+            <if test="createdDate != null">
+                and created_date = #{createdDate}
+            </if>
+            <if test="lastUpdatedBy != null">
+                and last_updated_by = #{lastUpdatedBy}
+            </if>
+            <if test="lastUpdatedDate != null">
+                and last_updated_date = #{lastUpdatedDate}
+            </if>
+        </where>
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
@@ -160,10 +200,20 @@
         </set>
         where id = #{id}
     </update>
+    <update id="albumMove">
+        update my_files_manage set source_id=#{target},last_updated_by=#{lastUpdatedBy},last_updated_date=SYSDATE() where
+        source_id=#{source} and id in
+        <foreach collection="files" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 
     <!--通过主键删除-->
     <delete id="deleteById">
         delete from my_files_manage where id = #{id}
+    </delete>
+    <delete id="deleteByCond">
+        delete from my_files_manage where id = #{id} and source_id=#{sourceId}
     </delete>
 
 </mapper>

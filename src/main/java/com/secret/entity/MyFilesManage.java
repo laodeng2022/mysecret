@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * (MyFilesManage)实体类
@@ -16,6 +17,8 @@ public class MyFilesManage implements Serializable {
     private static final long serialVersionUID = 893909008373913912L;
 
     private Long id;
+
+    private Long album;
 
     private Long sourceId;
 
@@ -33,5 +36,12 @@ public class MyFilesManage implements Serializable {
 
     private Date lastUpdatedDate;
 
+    private List<String> url;
+
+    private List<Long> files;
+
+    private Long source;
+
+    private Long target;
 }
 

@@ -80,5 +80,10 @@ public interface MyFilesManageDao {
      */
     int deleteById(Long id);
 
+    List<MyFilesManage> queryList(MyFilesManage myFilesManage);
+
+    void deleteByCond(MyFilesManage deleteCond);
+
+    void albumMove(MyFilesManage myFilesManage);
 }
 

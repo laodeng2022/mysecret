@@ -2,6 +2,7 @@ package com.secret.service.impl;
 
 import com.secret.dao.MyAlbumDao;
 import com.secret.entity.MyAlbum;
+import com.secret.entity.MyFilesManage;
 import com.secret.service.MyAlbumService;
 import org.springframework.stereotype.Service;
 
@@ -63,4 +64,5 @@ public class MyAlbumServiceImpl implements MyAlbumService {
     public boolean deleteById(Long id) {
         return this.myAlbumDao.deleteById(id) > 0;
     }
+
 }

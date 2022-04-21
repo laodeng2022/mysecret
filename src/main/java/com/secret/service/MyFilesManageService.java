@@ -53,4 +53,9 @@ public interface MyFilesManageService {
      */
     boolean deleteById(Long id);
 
+    Object queryList(MyFilesManage myFilesManage);
+
+    void deleteByCond(MyFilesManage deleteCond);
+
+    void albumMove(MyFilesManage myFilesManage);
 }
