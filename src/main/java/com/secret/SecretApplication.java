@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -20,6 +21,7 @@ import java.util.Collections;
  * @Email befamouscoder@163.com
  */
 @ServletComponentScan
+@EnableCaching
 @SpringBootApplication(scanBasePackages = {"com.secret"})
 public class SecretApplication extends SpringBootServletInitializer {
 

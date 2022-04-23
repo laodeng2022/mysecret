@@ -44,5 +44,7 @@ public class MyBaseInfo implements Serializable {
     private String lockpassword;
 
     private String maskpassword;
+
+    private String token;
 }
 

@@ -4,6 +4,8 @@ import com.secret.entity.MyFilesManage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 /**
  * (MyFilesManage)表服务接口
  *
@@ -58,4 +60,6 @@ public interface MyFilesManageService {
     void deleteByCond(MyFilesManage deleteCond);
 
     void albumMove(MyFilesManage myFilesManage);
+
+    List<MyFilesManage> queryByPage(MyFilesManage filesManage);
 }

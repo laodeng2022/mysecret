@@ -85,5 +85,7 @@ public interface MyFilesManageDao {
     void deleteByCond(MyFilesManage deleteCond);
 
     void albumMove(MyFilesManage myFilesManage);
+
+    List<MyFilesManage> selectByParamsPage(MyFilesManage filesManage);
 }
 

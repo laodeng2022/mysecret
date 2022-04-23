@@ -4,6 +4,10 @@ import com.secret.config.JwtConfig;
 import com.secret.entity.*;
 import com.secret.service.*;
 import com.secret.util.Md5Util;
+import com.secret.util.RedisUtil;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -71,26 +75,58 @@ public class MySecretController {
         return result;
     }
 
+    @PostMapping("/user/signup")
+    public ApiResponse<MyBaseInfo> userSignUp(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo checkUser = new MyBaseInfo();
+            checkUser.setEmail(mybaseInfo.getEmail());
+            List<MyBaseInfo> baseInfoList = this.myBaseInfoService.queryList(checkUser);
+            if (!CollectionUtils.isEmpty(baseInfoList)) {
+                return ApiResponse.error("账号已存在", mybaseInfo);
+            }
+            mybaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            this.myBaseInfoService.insert(mybaseInfo);
+            return ApiResponse.success(mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("注册失败", mybaseInfo);
+        }
+    }
+
+    @PostMapping("/user/signin")
+    public ApiResponse<MyBaseInfo> userSignin(@RequestBody MyBaseInfo mybaseInfo) {
+        try {
+            MyBaseInfo checkUser = new MyBaseInfo();
+            checkUser.setEmail(mybaseInfo.getEmail());
+            checkUser.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            List<MyBaseInfo> baseInfoList = this.myBaseInfoService.queryList(checkUser);
+            if (!CollectionUtils.isEmpty(baseInfoList)) {
+                mybaseInfo.setToken(jwtConfig.getToken(mybaseInfo.getAccount() + "##" + mybaseInfo.getPassword()));
+                return ApiResponse.success(mybaseInfo);
+            }
+            return ApiResponse.error("用户未注册或密码不正确", mybaseInfo);
+        } catch (Exception e) {
+            return ApiResponse.error("注册失败", mybaseInfo);
+        }
+    }
+
     private Long getCurrentUserId() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                .getRequest();
-        String token = request.getHeader("token");
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("authorization");
         String subject = jwtConfig.getTokenClaim(token).getSubject();
         String userAccount = subject.split("##")[0];
         MyBaseInfo mybaseInfo = new MyBaseInfo();
-        mybaseInfo.setAccount(userAccount);
+        mybaseInfo.setEmail(userAccount);
         List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(mybaseInfo);
         return userInfoList.get(0).getId();
     }
 
     private MyBaseInfo getLoginUser() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                .getRequest();
-        String token = request.getHeader("token");
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("authorization");
         String subject = jwtConfig.getTokenClaim(token).getSubject();
-        String userAccount = subject.split("##")[0];
+        String email = subject.split("##")[0];
         MyBaseInfo mybaseInfo = new MyBaseInfo();
-        mybaseInfo.setAccount(userAccount);
+        mybaseInfo.setEmail(email);
         mybaseInfo.setPassword(subject.split("##")[1]);
         return mybaseInfo;
     }
@@ -100,24 +136,18 @@ public class MySecretController {
 
         try {
             MyBaseInfo loginUser = this.getLoginUser();
-            if (StringUtils.isEmpty(mybaseInfo.getAccount())) {
-                return ApiResponse.error("请设置用户账号", mybaseInfo);
-            }
-            if (StringUtils.isEmpty(loginUser.getPassword())) {
-                return ApiResponse.error("请设置用户密码", mybaseInfo);
-            }
             MyBaseInfo checkBaseInfo = new MyBaseInfo();
-            checkBaseInfo.setAccount(loginUser.getAccount());
+            checkBaseInfo.setEmail(loginUser.getEmail());
             List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkBaseInfo);
-            if (!CollectionUtils.isEmpty(userInfoList)) {
-                return ApiResponse.error("用户已存在", mybaseInfo);
+            if (CollectionUtils.isEmpty(userInfoList)) {
+                return ApiResponse.error("用户不存在", mybaseInfo);
             }
-            mybaseInfo.setVipLevel(null);
-            mybaseInfo.setPassword(Md5Util.encodeByMd5(loginUser.getPassword()));
+            mybaseInfo.setId(userInfoList.get(0).getId());
+            this.myBaseInfoService.update(mybaseInfo);
         } catch (Exception e) {
             return ApiResponse.error("保存个人资料失败", mybaseInfo);
         }
-        return ApiResponse.success(this.myBaseInfoService.insert(mybaseInfo));
+        return ApiResponse.success(mybaseInfo);
     }
 
     @GetMapping("/user/profile")
@@ -141,8 +171,8 @@ public class MySecretController {
         try {
             MyBaseInfo loginUser = this.getLoginUser();
             MyBaseInfo checkUserProfile = new MyBaseInfo();
-            checkUserProfile.setAccount(loginUser.getAccount());
-            checkUserProfile.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
+            checkUserProfile.setEmail(loginUser.getEmail());
+            checkUserProfile.setLockpassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
             List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkUserProfile);
             if (CollectionUtils.isEmpty(userInfoList)) {
                 return ApiResponse.error("密码不正确", null);
@@ -221,6 +251,15 @@ public class MySecretController {
             return ApiResponse.error("更新密码失败", null);
         }
     }
+    @GetMapping("/public/lostpwd")
+    public ApiResponse<Map> lostPassword() {
+        Map<String,Long> result=new HashMap<>();
+        result.put("ky",Math.round((Math.random()+1) * 1000));
+       // RedisUtil.redisPut("superbing09", "你好！是、啊");
+       // String s= RedisUtil.redisGet("superbing09");
+        return ApiResponse.success(result);
+    }
+
 
 
     @PostMapping("/user/setting")
@@ -298,16 +337,14 @@ public class MySecretController {
     public ApiResponse<Boolean> deleteAlbumById(@PathVariable("id") Long id) {
         return ApiResponse.success(this.myAlbumService.deleteById(id));
     }
-
-    /**
-     * 删除数据
-     *
-     * @param id 主键
-     * @return 删除是否成功
-     */
     @GetMapping("/album/{id}")
-    public ApiResponse<MyAlbum> getAlbumById(@PathVariable("id") Long id) {
-        return ApiResponse.success(this.myAlbumService.queryById(id));
+    public ApiResponse<List<MyFilesManage>> selectAllPageQuery(@PathVariable("id") Long id, @RequestParam("page") int pageNum,
+                                                                   @RequestParam("limit") int pageSize) {
+        MyFilesManage filesManage = new MyFilesManage();
+        filesManage.setSourceId(id);
+        filesManage.setPageNum(pageNum);
+        filesManage.setPageSize(pageSize);
+        return ApiResponse.success(this.myFilesManageService.queryByPage(filesManage));
     }
 
     /**
@@ -363,6 +400,15 @@ public class MySecretController {
         return ApiResponse.success(myFilesManage);
     }
 
+    @PostMapping("/snaphost")
+    public ApiResponse<MyFilesManage> snaphost(@RequestBody MyFilesManage myFilesManage) {
+        Long userId = this.getCurrentUserId();
+        myFilesManage.setSourceType("snaphost");
+        myFilesManage.setCreatedBy(userId);
+        this.myFilesManageService.insert(myFilesManage);
+        return ApiResponse.success(myFilesManage);
+    }
+
     @PostMapping("/album/download/{album}")
     public ApiResponse<Object> downloadFile(@PathVariable("album") Long album, @RequestBody MyFilesManage myFilesManage) {
         myFilesManage.setSourceId(album);
@@ -376,20 +422,21 @@ public class MySecretController {
      * @return 删除是否成功
      */
     @DeleteMapping("/album/{album}/file/{id}")
-    public ApiResponse<Boolean> deleteAlbumById(@PathVariable("album") Long album,@PathVariable("id") Long id) {
-        MyFilesManage deleteCond=new MyFilesManage();
+    public ApiResponse<Boolean> deleteAlbumById(@PathVariable("album") Long album, @PathVariable("id") Long id) {
+        MyFilesManage deleteCond = new MyFilesManage();
         deleteCond.setSourceId(album);
         deleteCond.setId(id);
         this.myFilesManageService.deleteByCond(deleteCond);
         return ApiResponse.success(null);
     }
+
     /**
      * 移动相册
      *
      * @return
      */
     @PostMapping("/album/move")
-    public ApiResponse<List<VipRights>> albumMove( @RequestBody MyFilesManage myFilesManage) {
+    public ApiResponse<List<VipRights>> albumMove(@RequestBody MyFilesManage myFilesManage) {
         myFilesManage.setLastUpdatedBy(this.getCurrentUserId());
         myFilesManage.setLastUpdatedDate(new Date());
         this.myFilesManageService.albumMove(myFilesManage);

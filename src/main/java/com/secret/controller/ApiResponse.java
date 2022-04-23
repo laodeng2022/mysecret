@@ -13,8 +13,8 @@ public final class ApiResponse<T> {
     private String code;
     private String msg;
 
-    private ApiResponse(String code, String message, T data) {
-        this.msg = message;
+    private ApiResponse(String code, String msg, T data) {
+        this.msg = msg;
         this.data = data;
         this.code = code;
     }
@@ -27,9 +27,9 @@ public final class ApiResponse<T> {
 
     @JsonCreator
     public static <T> ApiResponse<T> error(
-            @JsonProperty("message") String message,
+            @JsonProperty("msg") String msg,
             @JsonProperty("data") T data) {
-        return new ApiResponse<>(Code.ERROR.getCode(), message, data);
+        return new ApiResponse<>(Code.ERROR.getCode(), msg, data);
     }
 
     public enum Code {
@@ -58,4 +58,5 @@ public final class ApiResponse<T> {
     public String getCode() {
         return this.code;
     }
+    public String getMsg(){return this.msg;}
 }

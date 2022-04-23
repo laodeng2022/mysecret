@@ -95,4 +95,9 @@ public class MyFilesManageServiceImpl implements MyFilesManageService {
     public void albumMove(MyFilesManage myFilesManage) {
         this.myFilesManageDao.albumMove(myFilesManage);
     }
+
+    @Override
+    public List<MyFilesManage> queryByPage(MyFilesManage filesManage) {
+        return myFilesManageDao.selectByParamsPage(filesManage) ;
+    }
 }
