@@ -4,7 +4,7 @@ import com.secret.config.JwtConfig;
 import com.secret.entity.*;
 import com.secret.service.*;
 import com.secret.util.Md5Util;
-import com.secret.util.RedisUtil;
+//import com.secret.util.RedisUtil;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -100,7 +100,7 @@ public class MySecretController {
             checkUser.setPassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
             List<MyBaseInfo> baseInfoList = this.myBaseInfoService.queryList(checkUser);
             if (!CollectionUtils.isEmpty(baseInfoList)) {
-                mybaseInfo.setToken(jwtConfig.getToken(mybaseInfo.getAccount() + "##" + mybaseInfo.getPassword()));
+                mybaseInfo.setToken(jwtConfig.getToken(mybaseInfo.getEmail() + "##" + mybaseInfo.getPassword()));
                 return ApiResponse.success(mybaseInfo);
             }
             return ApiResponse.error("用户未注册或密码不正确", mybaseInfo);
@@ -155,7 +155,7 @@ public class MySecretController {
         try {
             MyBaseInfo loginUser = this.getLoginUser();
             MyBaseInfo userProfileCond = new MyBaseInfo();
-            userProfileCond.setAccount(loginUser.getAccount());
+            userProfileCond.setEmail(loginUser.getEmail());
             List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(userProfileCond);
             if (CollectionUtils.isEmpty(userInfoList)) {
                 return ApiResponse.error("用户不存在", null);
@@ -190,6 +190,10 @@ public class MySecretController {
             if (StringUtils.isEmpty(mybaseInfo.getNewpassword())) {
                 return ApiResponse.error("请设置新密码", null);
             }
+            String oldPassword=Md5Util.encodeByMd5(mybaseInfo.getOldpassword());
+            if(!oldPassword.equalsIgnoreCase(mybaseInfo.getPassword())){
+                return ApiResponse.error("旧密码不正确", null);
+            }
             curBaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getNewpassword()));
             curBaseInfo.setLastUpdatedDate(new Date());
             this.myBaseInfoService.update(curBaseInfo);
@@ -220,7 +224,7 @@ public class MySecretController {
         try {
             MyBaseInfo loginUser = this.getLoginUser();
             MyBaseInfo checkMaskPassword = new MyBaseInfo();
-            checkMaskPassword.setAccount(loginUser.getAccount());
+            checkMaskPassword.setEmail(loginUser.getEmail());
             checkMaskPassword.setMaskpassword(Md5Util.encodeByMd5(mybaseInfo.getPassword()));
             List<MyBaseInfo> userInfoList = myBaseInfoService.queryList(checkMaskPassword);
             if (CollectionUtils.isEmpty(userInfoList)) {
@@ -286,7 +290,7 @@ public class MySecretController {
      * @param myDiary 实体
      * @return 新增结果
      */
-    @PostMapping("diary")
+    @PostMapping("/diary")
     public ApiResponse<MyDiary> addDiary(@RequestBody MyDiary myDiary) {
         Long curUserId = this.getCurrentUserId();
         myDiary.setCreatedBy(curUserId);
@@ -299,7 +303,7 @@ public class MySecretController {
      * @param id 主键
      * @return 删除是否成功
      */
-    @DeleteMapping("diary/{id}")
+    @DeleteMapping("/diary/{id}")
     public ApiResponse<Boolean> deleteDiaryById(@PathVariable("id") Long id) {
         return ApiResponse.success(this.myDiaryService.deleteById(id));
     }
@@ -310,7 +314,7 @@ public class MySecretController {
      * @param id 主键
      * @return 单条数据
      */
-    @GetMapping("diary/{id}")
+    @GetMapping("/diary/{id}")
     public ApiResponse<MyDiary> queryDiaryById(@PathVariable("id") Long id) {
         return ApiResponse.success(this.myDiaryService.queryById(id));
     }
@@ -321,7 +325,7 @@ public class MySecretController {
      * @param myAlbum 实体
      * @return 新增结果
      */
-    @PostMapping("album")
+    @PostMapping("/album")
     public ApiResponse<MyAlbum> addAlbum(@RequestBody MyAlbum myAlbum) {
         myAlbum.setCreatedBy(this.getCurrentUserId());
         return ApiResponse.success(this.myAlbumService.insert(myAlbum));

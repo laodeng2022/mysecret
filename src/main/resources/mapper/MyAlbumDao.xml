@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.secret.dao.MyAlbumDao">
 
-    <resultMap type="com.secret.entity.MyDiary" id="MyAlbumMap">
+    <resultMap type="com.secret.entity.MyAlbum" id="MyAlbumMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="createdBy" column="created_by" jdbcType="INTEGER"/>

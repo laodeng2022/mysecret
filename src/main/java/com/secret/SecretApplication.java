@@ -21,7 +21,7 @@ import java.util.Collections;
  * @Email befamouscoder@163.com
  */
 @ServletComponentScan
-@EnableCaching
+//@EnableCaching
 @SpringBootApplication(scanBasePackages = {"com.secret"})
 public class SecretApplication extends SpringBootServletInitializer {
 
