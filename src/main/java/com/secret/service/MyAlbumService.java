@@ -3,6 +3,12 @@ package com.secret.service;
 
 import com.secret.entity.MyAlbum;
 import com.secret.entity.MyFilesManage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * (MyAlbum)表服务接口
@@ -43,4 +49,6 @@ public interface MyAlbumService {
      * @return 是否成功
      */
     boolean deleteById(Long id);
+
+    Page<MyAlbum> queryByPage(MyAlbum album, Pageable pageable);
 }

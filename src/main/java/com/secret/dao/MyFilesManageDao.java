@@ -29,7 +29,7 @@ public interface MyFilesManageDao {
      * @param pageable      分页对象
      * @return 对象列表
      */
-    List<MyFilesManage> queryAllByLimit(MyFilesManage myFilesManage, @Param("pageable") Pageable pageable);
+    List<MyFilesManage> queryAllByLimit(@Param("param")MyFilesManage myFilesManage, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数

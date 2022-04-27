@@ -1,7 +1,10 @@
 package com.secret.dao;
 
 import com.secret.entity.MyAlbum;
+import com.secret.entity.MyFilesManage;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -70,5 +73,6 @@ public interface MyAlbumDao {
      */
     int deleteById(Long id);
 
+    List<MyAlbum> queryAllByLimit(@Param("param")MyAlbum album, @Param("pageable") Pageable pageable);
 }
 

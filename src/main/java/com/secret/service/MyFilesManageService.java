@@ -3,6 +3,7 @@ package com.secret.service;
 import com.secret.entity.MyFilesManage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface MyFilesManageService {
      * @param pageRequest   分页对象
      * @return 查询结果
      */
-    Page<MyFilesManage> queryByPage(MyFilesManage myFilesManage, PageRequest pageRequest);
+    Page<MyFilesManage> queryByPage(MyFilesManage myFilesManage, Pageable pageable);
 
     /**
      * 新增数据
@@ -55,7 +56,7 @@ public interface MyFilesManageService {
      */
     boolean deleteById(Long id);
 
-    Object queryList(MyFilesManage myFilesManage);
+    List<MyFilesManage> queryList(MyFilesManage myFilesManage);
 
     void deleteByCond(MyFilesManage deleteCond);
 

@@ -2,11 +2,15 @@ package com.secret.service.impl;
 
 import com.secret.dao.MyAlbumDao;
 import com.secret.entity.MyAlbum;
-import com.secret.entity.MyFilesManage;
 import com.secret.service.MyAlbumService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (MyAlbum)表服务实现类
@@ -65,4 +69,9 @@ public class MyAlbumServiceImpl implements MyAlbumService {
         return this.myAlbumDao.deleteById(id) > 0;
     }
 
+    @Override
+    public Page<MyAlbum> queryByPage(MyAlbum album, Pageable pageable) {
+        long total = this.myAlbumDao.count(album);
+        return new PageImpl<>(this.myAlbumDao.queryAllByLimit(album, pageable), pageable, total);
+    }
 }

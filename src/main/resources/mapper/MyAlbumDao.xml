@@ -25,23 +25,23 @@
         id, title, created_by, created_date, last_updated_by, last_updated_date
         from my_album
         <where>
-            <if test="id != null">
-                and id = #{id}
+            <if test="param.id != null">
+                and id = #{param.id}
             </if>
-            <if test="title != null and title != ''">
+            <if test="param.title != null and param.title != ''">
                 and title = #{title}
             </if>
-            <if test="createdBy != null">
-                and created_by = #{createdBy}
+            <if test="param.createdBy != null">
+                and created_by = #{param.createdBy}
             </if>
-            <if test="createdDate != null">
-                and created_date = #{createdDate}
+            <if test="param.createdDate != null">
+                and created_date = #{param.createdDate}
             </if>
-            <if test="lastUpdatedBy != null">
-                and last_updated_by = #{lastUpdatedBy}
+            <if test="param.lastUpdatedBy != null">
+                and last_updated_by = #{param.lastUpdatedBy}
             </if>
-            <if test="lastUpdatedDate != null">
-                and last_updated_date = #{lastUpdatedDate}
+            <if test="param.lastUpdatedDate != null">
+                and last_updated_date = #{param.lastUpdatedDate}
             </if>
         </where>
         limit #{pageable.offset}, #{pageable.pageSize}

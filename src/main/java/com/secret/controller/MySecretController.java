@@ -4,10 +4,11 @@ import com.secret.config.JwtConfig;
 import com.secret.entity.*;
 import com.secret.service.*;
 import com.secret.util.Md5Util;
-//import com.secret.util.RedisUtil;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
+import io.jsonwebtoken.Claims;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//import com.secret.util.RedisUtil;
 
 /**
  * (MyDiary)表控制层
@@ -112,7 +115,8 @@ public class MySecretController {
     private Long getCurrentUserId() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("authorization");
-        String subject = jwtConfig.getTokenClaim(token).getSubject();
+        Claims claim = jwtConfig.getTokenClaim(token);
+        String subject = claim.getSubject();
         String userAccount = subject.split("##")[0];
         MyBaseInfo mybaseInfo = new MyBaseInfo();
         mybaseInfo.setEmail(userAccount);
@@ -123,6 +127,10 @@ public class MySecretController {
     private MyBaseInfo getLoginUser() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("authorization");
+        Claims claim = jwtConfig.getTokenClaim(token);
+        if (claim == null) {
+            return null;
+        }
         String subject = jwtConfig.getTokenClaim(token).getSubject();
         String email = subject.split("##")[0];
         MyBaseInfo mybaseInfo = new MyBaseInfo();
@@ -190,8 +198,8 @@ public class MySecretController {
             if (StringUtils.isEmpty(mybaseInfo.getNewpassword())) {
                 return ApiResponse.error("请设置新密码", null);
             }
-            String oldPassword=Md5Util.encodeByMd5(mybaseInfo.getOldpassword());
-            if(!oldPassword.equalsIgnoreCase(mybaseInfo.getPassword())){
+            String oldPassword = Md5Util.encodeByMd5(mybaseInfo.getOldpassword());
+            if (!oldPassword.equalsIgnoreCase(mybaseInfo.getPassword())) {
                 return ApiResponse.error("旧密码不正确", null);
             }
             curBaseInfo.setPassword(Md5Util.encodeByMd5(mybaseInfo.getNewpassword()));
@@ -255,15 +263,15 @@ public class MySecretController {
             return ApiResponse.error("更新密码失败", null);
         }
     }
+
     @GetMapping("/public/lostpwd")
     public ApiResponse<Map> lostPassword() {
-        Map<String,Long> result=new HashMap<>();
-        result.put("ky",Math.round((Math.random()+1) * 1000));
-       // RedisUtil.redisPut("superbing09", "你好！是、啊");
-       // String s= RedisUtil.redisGet("superbing09");
+        Map<String, Long> result = new HashMap<>();
+        result.put("ky", Math.round((Math.random() + 1) * 1000));
+        // RedisUtil.redisPut("superbing09", "你好！是、啊");
+        // String s= RedisUtil.redisGet("superbing09");
         return ApiResponse.success(result);
     }
-
 
 
     @PostMapping("/user/setting")
@@ -341,15 +349,30 @@ public class MySecretController {
     public ApiResponse<Boolean> deleteAlbumById(@PathVariable("id") Long id) {
         return ApiResponse.success(this.myAlbumService.deleteById(id));
     }
+
     @GetMapping("/album/{id}")
-    public ApiResponse<List<MyFilesManage>> selectAllPageQuery(@PathVariable("id") Long id, @RequestParam("page") int pageNum,
-                                                                   @RequestParam("limit") int pageSize) {
+    public ApiResponse<Page<MyFilesManage>> selectAllPageQuery(@PathVariable("id") Long id, @RequestParam("page") int pageNum,
+                                                               @RequestParam("limit") int pageSize) {
         MyFilesManage filesManage = new MyFilesManage();
         filesManage.setSourceId(id);
-        filesManage.setPageNum(pageNum);
-        filesManage.setPageSize(pageSize);
-        return ApiResponse.success(this.myFilesManageService.queryByPage(filesManage));
+        Sort sort = new Sort(Sort.Direction.ASC, "id");
+        Pageable pageable = new PageRequest(pageNum - 1, pageSize, sort);
+        Page<MyFilesManage> list = myFilesManageService.queryByPage(filesManage, pageable);
+
+        return ApiResponse.success(list);
     }
+
+    @GetMapping("/album/list")
+    public ApiResponse<Page<MyAlbum>> selectAlbumList(@RequestParam("page") int pageNum,
+                                                      @RequestParam("limit") int pageSize) {
+        MyAlbum album = new MyAlbum();
+        album.setCreatedBy(this.getCurrentUserId());
+        Sort sort = new Sort(Sort.Direction.ASC, "id");
+        Pageable pageable = new PageRequest(pageNum - 1, pageSize, sort);
+        Page<MyAlbum> list = myAlbumService.queryByPage(album, pageable);
+        return ApiResponse.success(list);
+    }
+
 
     /**
      * 编辑数据

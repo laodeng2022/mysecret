@@ -3,6 +3,7 @@ package com.secret.service.impl;
 import com.secret.entity.MyFilesManage;
 import com.secret.dao.MyFilesManageDao;
 import com.secret.service.MyFilesManageService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,13 +38,13 @@ public class MyFilesManageServiceImpl implements MyFilesManageService {
      * 分页查询
      *
      * @param myFilesManage 筛选条件
-     * @param pageRequest   分页对象
+     * @param pageable   分页对象
      * @return 查询结果
      */
     @Override
-    public Page<MyFilesManage> queryByPage(MyFilesManage myFilesManage, PageRequest pageRequest) {
+    public Page<MyFilesManage> queryByPage(MyFilesManage myFilesManage, Pageable pageable) {
         long total = this.myFilesManageDao.count(myFilesManage);
-        return new PageImpl<>(this.myFilesManageDao.queryAllByLimit(myFilesManage, pageRequest), pageRequest, total);
+        return new PageImpl<>(this.myFilesManageDao.queryAllByLimit(myFilesManage, pageable), pageable, total);
     }
 
     /**

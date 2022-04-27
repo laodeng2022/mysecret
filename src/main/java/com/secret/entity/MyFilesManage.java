@@ -44,7 +44,5 @@ public class MyFilesManage implements Serializable {
 
     private Long target;
 
-    private int pageNum;
-    private int pageSize;
 }
 
